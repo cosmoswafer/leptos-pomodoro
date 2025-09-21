@@ -2,6 +2,7 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
 use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
 
 mod components;
 
@@ -58,5 +59,18 @@ fn HomePage() -> impl IntoView {
 pub fn main() {
     console_error_panic_hook::set_once();
     console_log!("Starting Leptos Pomodoro Timer app");
-    mount_to_body(App);
+    
+    // Mount to the specific #leptos div element instead of body
+    let document = web_sys::window()
+        .expect("no global `window` exists")
+        .document()
+        .expect("should have a document on window");
+    
+    let leptos_element = document
+        .get_element_by_id("leptos")
+        .expect("should have #leptos element")
+        .dyn_into::<web_sys::HtmlElement>()
+        .expect("#leptos should be an HTML element");
+    
+    leptos::mount_to(leptos_element, App);
 }
