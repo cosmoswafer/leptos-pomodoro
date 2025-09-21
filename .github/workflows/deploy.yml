@@ -56,8 +56,19 @@ jobs:
         cp index.html dist/
         cp -r pkg dist/
         
-        # Update paths for GitHub Pages deployment
-        sed -i 's|from '\''./pkg/leptos_pomodoro.js'\''|from '\''./pkg/leptos_pomodoro.js'\''|g' dist/index.html
+        # Create .nojekyll file to prevent GitHub Pages from processing files with underscores
+        touch dist/.nojekyll
+        
+        # Create _headers file for WASM MIME type (for Netlify-style hosting)
+        # GitHub Pages doesn't support _headers but .nojekyll should help
+        echo "/*.wasm" > dist/_headers
+        echo "  Content-Type: application/wasm" >> dist/_headers
+        
+        # Verify files are correct
+        echo "Contents of dist directory:"
+        ls -la dist/
+        echo "Contents of dist/pkg directory:"
+        ls -la dist/pkg/
 
     - name: Upload Pages artifact
       uses: actions/upload-pages-artifact@v3
