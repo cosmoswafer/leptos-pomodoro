@@ -2,6 +2,9 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
 use wasm_bindgen::prelude::*;
+use wasm_bindgen::prelude::*;
+
+use wasm_bindgen::prelude::*;
 
 mod components;
 
@@ -55,6 +58,7 @@ fn HomePage() -> impl IntoView {
     }
 }
 
+#[wasm_bindgen]
 pub fn main() {
     console_error_panic_hook::set_once();
     console_log!("Starting Leptos Pomodoro Timer app");
