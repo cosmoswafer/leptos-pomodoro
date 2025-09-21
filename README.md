@@ -37,13 +37,15 @@ cd leptos-pomodoro
 ./build.sh
 ```
 
-3. Serve locally:
+3. **Important**: Serve locally (required for WASM/ES6 modules):
 ```bash
 cd dist
 python3 -m http.server 8080
 ```
 
 4. Open your browser and visit `http://localhost:8080`
+
+> ⚠️ **Common Issue**: Do not open `index.html` directly in your browser (using `file://` protocol). WASM modules and ES6 imports require a web server due to browser security restrictions. Always use a local server as shown above.
 
 ### Manual Build Steps
 
