@@ -1,0 +1,9 @@
+dist/
+target/
+Cargo.lock
+.DS_Store
+*.swp
+*.tmp
+node_modules/
+.env
+.env.local
