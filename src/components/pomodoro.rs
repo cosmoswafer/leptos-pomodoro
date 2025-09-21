@@ -1,7 +1,5 @@
-use leptos::*;
+use leptos::prelude::*;
 use gloo_timers::callback::Interval;
-use std::cell::RefCell;
-use std::rc::Rc;
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum TimerState {
@@ -51,19 +49,15 @@ impl TimerState {
 
 #[component]
 pub fn PomodoroTimer() -> impl IntoView {
-    let (current_state, set_current_state) = create_signal(TimerState::Work);
-    let (time_left, set_time_left) = create_signal(25 * 60); // 25 minutes in seconds
-    let (is_running, set_is_running) = create_signal(false);
-    let (work_sessions, set_work_sessions) = create_signal(0u32);
-    let (interval_handle, set_interval_handle) = create_signal::<Option<Rc<RefCell<Option<Interval>>>>>(None);
+    let (current_state, set_current_state) = signal(TimerState::Work);
+    let (time_left, set_time_left) = signal(25 * 60); // 25 minutes in seconds
+    let (is_running, set_is_running) = signal(false);
+    let (work_sessions, set_work_sessions) = signal(0u32);
 
     // Effect to handle timer updates
-    create_effect(move |_| {
-        if is_running.get() && interval_handle.get().is_none() {
-            let handle_cell = Rc::new(RefCell::new(None::<Interval>));
-            set_interval_handle.set(Some(handle_cell.clone()));
-            
-            let handle = Interval::new(1000, move || {
+    Effect::new(move |_| {
+        if is_running.get() {
+            let interval = Interval::new(1000, move || {
                 set_time_left.update(|time| {
                     if *time > 0 {
                         *time -= 1;
@@ -86,20 +80,12 @@ pub fn PomodoroTimer() -> impl IntoView {
                                 current.display_name(), 
                                 next.display_name()));
                         }
-                        
-                        set_interval_handle.set(None);
                     }
                 });
             });
             
-            *handle_cell.borrow_mut() = Some(handle);
-        } else if !is_running.get() {
-            if let Some(handle_cell) = interval_handle.get() {
-                if let Some(handle) = handle_cell.borrow_mut().take() {
-                    handle.cancel();
-                }
-                set_interval_handle.set(None);
-            }
+            // Store the interval to clean up later
+            std::mem::forget(interval);
         }
     });
 
@@ -110,12 +96,6 @@ pub fn PomodoroTimer() -> impl IntoView {
     let reset_timer = move |_| {
         set_is_running.set(false);
         set_time_left.set(current_state.get().duration_minutes() * 60);
-        if let Some(handle_cell) = interval_handle.get() {
-            if let Some(handle) = handle_cell.borrow_mut().take() {
-                handle.cancel();
-            }
-            set_interval_handle.set(None);
-        }
     };
 
     let switch_mode = move |new_state: TimerState| {
@@ -123,12 +103,6 @@ pub fn PomodoroTimer() -> impl IntoView {
             set_is_running.set(false);
             set_current_state.set(new_state);
             set_time_left.set(new_state.duration_minutes() * 60);
-            if let Some(handle_cell) = interval_handle.get() {
-                if let Some(handle) = handle_cell.borrow_mut().take() {
-                    handle.cancel();
-                }
-                set_interval_handle.set(None);
-            }
         }
     };
 

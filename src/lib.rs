@@ -1,6 +1,7 @@
-use leptos::*;
+use leptos::prelude::*;
 use leptos_meta::*;
 use leptos_router::*;
+use leptos_router::components::*;
 use wasm_bindgen::prelude::*;
 
 mod components;
@@ -28,8 +29,8 @@ fn App() -> impl IntoView {
 
         <Router>
             <main class="app">
-                <Routes>
-                    <Route path="" view=HomePage/>
+                <Routes fallback=|| view! { <h1>"Not Found"</h1> }>
+                    <Route path=StaticSegment("") view=HomePage/>
                 </Routes>
             </main>
         </Router>
