@@ -305,10 +305,34 @@
 <body>
     <div id="leptos"></div>
     <script type="module">
-        import init, { main } from './pkg/leptos_pomodoro.js';
         async function run() {
-            await init();
-            main();
+            try {
+                console.log('Loading WASM module from:', new URL('./pkg/leptos_pomodoro.js', window.location.href).href);
+                const { default: init, main } = await import('./pkg/leptos_pomodoro.js');
+                console.log('WASM module loaded, initializing...');
+                await init();
+                console.log('WASM initialized, starting main...');
+                main();
+                console.log('Application started successfully');
+            } catch (error) {
+                console.error('Failed to load or initialize the application:', error);
+                document.getElementById('leptos').innerHTML = `
+                    <div style="padding: 20px; margin: 20px; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 5px;">
+                        <h2>Failed to Load Application</h2>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p><strong>Possible causes:</strong></p>
+                        <ul>
+                            <li>WASM files not properly served (MIME type issue)</li>
+                            <li>JavaScript modules not supported by browser</li>
+                            <li>Network connectivity issues</li>
+                        </ul>
+                        <p><strong>Technical details:</strong></p>
+                        <pre>${error.stack || error}</pre>
+                        <p>Current URL: ${window.location.origin + window.location.pathname}</p>
+                        <p>Expected WASM URL: ${(() => { const u = new URL('./pkg/leptos_pomodoro_bg.wasm', window.location.href); return u.origin + u.pathname; })()}</p>
+                    </div>
+                `;
+            }
         }
         run();
     </script>

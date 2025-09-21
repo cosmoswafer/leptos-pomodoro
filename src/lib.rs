@@ -2,9 +2,6 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
 use wasm_bindgen::prelude::*;
-use wasm_bindgen::prelude::*;
-
-use wasm_bindgen::prelude::*;
 
 mod components;
 
@@ -25,7 +22,6 @@ fn App() -> impl IntoView {
     provide_meta_context();
 
     view! {
-        <Stylesheet id="leptos" href="/pkg/leptos-pomodoro.css"/>
         <Title text="Leptos Pomodoro Timer"/>
         <Meta name="description" content="A beautiful pomodoro timer built with Rust and Leptos"/>
         <Meta name="viewport" content="width=device-width, initial-scale=1"/>
