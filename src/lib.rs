@@ -30,7 +30,7 @@ fn App() -> impl IntoView {
         <Router>
             <main class="app">
                 <Routes fallback=|| view! { <h1>"Not Found"</h1> }>
-                    <Route path=StaticSegment("") view=HomePage/>
+                    <Route path="/" view=HomePage/>
                 </Routes>
             </main>
         </Router>
