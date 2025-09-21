@@ -328,8 +328,8 @@
                         </ul>
                         <p><strong>Technical details:</strong></p>
                         <pre>${error.stack || error}</pre>
-                        <p>Current URL: ${window.location.href}</p>
-                        <p>Expected WASM URL: ${new URL('./pkg/leptos_pomodoro_bg.wasm', window.location.href).href}</p>
+                        <p>Current URL: ${window.location.origin + window.location.pathname}</p>
+                        <p>Expected WASM URL: ${(() => { const u = new URL('./pkg/leptos_pomodoro_bg.wasm', window.location.href); return u.origin + u.pathname; })()}</p>
                     </div>
                 `;
             }
