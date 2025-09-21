@@ -48,9 +48,9 @@ fn HomePage() -> impl IntoView {
                 <h1>"🍅 Leptos Pomodoro Timer"</h1>
                 <p>"Stay focused and productive with the Pomodoro Technique"</p>
             </header>
-            
+
             <PomodoroTimer/>
-            
+
             <footer class="footer">
                 <p>"Built with " <a href="https://leptos.dev" target="_blank">"Leptos"</a> " and Rust 🦀"</p>
             </footer>

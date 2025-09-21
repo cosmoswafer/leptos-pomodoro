@@ -1,5 +1,5 @@
-use leptos::*;
 use gloo_timers::callback::Interval;
+use leptos::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -55,14 +55,15 @@ pub fn PomodoroTimer() -> impl IntoView {
     let (time_left, set_time_left) = create_signal(25 * 60); // 25 minutes in seconds
     let (is_running, set_is_running) = create_signal(false);
     let (work_sessions, set_work_sessions) = create_signal(0u32);
-    let (interval_handle, set_interval_handle) = create_signal::<Option<Rc<RefCell<Option<Interval>>>>>(None);
+    let (interval_handle, set_interval_handle) =
+        create_signal::<Option<Rc<RefCell<Option<Interval>>>>>(None);
 
     // Effect to handle timer updates
     create_effect(move |_| {
         if is_running.get() && interval_handle.get().is_none() {
             let handle_cell = Rc::new(RefCell::new(None::<Interval>));
             set_interval_handle.set(Some(handle_cell.clone()));
-            
+
             let handle = Interval::new(1000, move || {
                 set_time_left.update(|time| {
                     if *time > 0 {
@@ -70,28 +71,30 @@ pub fn PomodoroTimer() -> impl IntoView {
                     } else {
                         // Timer finished
                         set_is_running.set(false);
-                        
+
                         let current = current_state.get();
                         if current == TimerState::Work {
                             set_work_sessions.update(|sessions| *sessions += 1);
                         }
-                        
+
                         let next = current.next_state(work_sessions.get());
                         set_current_state.set(next);
                         set_time_left.set(next.duration_minutes() * 60);
-                        
+
                         // Play a notification sound (browser notification)
                         if let Some(window) = web_sys::window() {
-                            let _ = window.alert_with_message(&format!("{} finished! Time for {}", 
-                                current.display_name(), 
-                                next.display_name()));
+                            let _ = window.alert_with_message(&format!(
+                                "{} finished! Time for {}",
+                                current.display_name(),
+                                next.display_name()
+                            ));
                         }
-                        
+
                         set_interval_handle.set(None);
                     }
                 });
             });
-            
+
             *handle_cell.borrow_mut() = Some(handle);
         } else if !is_running.get() {
             if let Some(handle_cell) = interval_handle.get() {
@@ -142,7 +145,7 @@ pub fn PomodoroTimer() -> impl IntoView {
         <div class="pomodoro-timer">
             <div class="timer-header">
                 <h2 class="timer-state">
-                    {move || current_state.get().emoji()} " " 
+                    {move || current_state.get().emoji()} " "
                     {move || current_state.get().display_name()}
                 </h2>
                 <div class="session-counter">
@@ -159,14 +162,14 @@ pub fn PomodoroTimer() -> impl IntoView {
             </div>
 
             <div class="timer-controls">
-                <button 
-                    class="control-btn primary" 
+                <button
+                    class="control-btn primary"
                     on:click=start_pause_timer
                 >
                     {move || if is_running.get() { "Pause" } else { "Start" }}
                 </button>
-                <button 
-                    class="control-btn secondary" 
+                <button
+                    class="control-btn secondary"
                     on:click=reset_timer
                 >
                     "Reset"
@@ -174,21 +177,21 @@ pub fn PomodoroTimer() -> impl IntoView {
             </div>
 
             <div class="mode-selector">
-                <button 
+                <button
                     class="mode-btn"
                     class:active=move || current_state.get() == TimerState::Work
                     on:click=switch_mode(TimerState::Work)
                 >
                     "🍅 Work (25m)"
                 </button>
-                <button 
+                <button
                     class="mode-btn"
                     class:active=move || current_state.get() == TimerState::ShortBreak
                     on:click=switch_mode(TimerState::ShortBreak)
                 >
                     "☕ Short Break (5m)"
                 </button>
-                <button 
+                <button
                     class="mode-btn"
                     class:active=move || current_state.get() == TimerState::LongBreak
                     on:click=switch_mode(TimerState::LongBreak)
